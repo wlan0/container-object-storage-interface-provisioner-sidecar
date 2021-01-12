@@ -21,7 +21,7 @@ import (
 const (
 	// Interval of logging connection errors
 	connectionLoggingInterval = 10 * time.Second
-	defaultDriverAddress      = "tcp://0.0.0.0:9000"
+	defaultDriverAddress      = "tcp://127.0.0.1:9000"
 )
 
 // SidecarOptions defines the options for running the sidecar

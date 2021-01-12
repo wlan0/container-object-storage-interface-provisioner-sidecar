@@ -37,7 +37,7 @@ import (
 
 var (
 	cosiAddress = "tcp://0.0.0.0:9000"
-	s3Endpoint  = "tcp://0.0.0.0:9000"
+	s3Endpoint  = "minio:9000"
 	accessKey   = "AKIAIOSFODNN7EXAMPLE"
 	secretKey   = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 	ctx         context.Context
@@ -110,6 +110,7 @@ func main() {
 }
 
 func run(args []string, endpoint string) error {
+	fmt.Println(s3Endpoint)
 	// Initialize minio client object.
 	minioClient, err := minio.New(s3Endpoint, accessKey, secretKey, false)
 	if err != nil {

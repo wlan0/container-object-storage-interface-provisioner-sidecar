@@ -2,16 +2,16 @@
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: objectstorage-provisioner-role
-  namespace: objectstorage-provisioner-ns
+  name: objectstorage-sidecar-role
+  namespace: objectstorage-sidecar-ns
   labels:
     app.kubernetes.io/part-of: container-object-storage-interface
-    app.kubernetes.io/component: provisioner
+    app.kubernetes.io/component: sidecar
     app.kubernetes.io/version: main
-    app.kubernetes.io/name: container-object-storage-interface-provisioner
+    app.kubernetes.io/name: container-object-storage-interface-sidecar
 rules:
 - apiGroups: ["objectstorage.k8s.io"]
-  resources: ["buckets", "bucketaccess"]
+  resources: ["buckets", "bucketaccesses"]
   verbs: ["get", "list", "watch", "update", "create", "delete"]
 - apiGroups: [""]
   resources: ["events"]
@@ -20,18 +20,55 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: objectstorage-provisioner-role-binding
-  namespace: objectstorage-provisioner-ns
+  name: objectstorage-sidecar-role-binding
+  namespace: objectstorage-sidecar-ns
   labels:
     app.kubernetes.io/part-of: container-object-storage-interface
-    app.kubernetes.io/component: provisioner
+    app.kubernetes.io/component: sidecar
     app.kubernetes.io/version: main
-    app.kubernetes.io/name: container-object-storage-interface-provisioner
+    app.kubernetes.io/name: container-object-storage-interface-sidecar
 subjects:
   - kind: ServiceAccount
-    name: objectstorage-provisioner-sa
-    namespace: objectstorage-provisioner-ns
+    name: objectstorage-sidecar-sa
+    namespace: objectstorage-sidecar-ns
 roleRef:
   kind: ClusterRole
-  name: objectstorage-provisioner-role
+  name: objectstorage-sidecar-role
   apiGroup: rbac.authorization.k8s.io
+
+---
+  
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: objectstorage-sidecar
+  namespace: objectstorage-sidecar-ns
+  labels:
+    app.kubernetes.io/part-of: container-object-storage-interface
+    app.kubernetes.io/component: sidecar
+    app.kubernetes.io/version: main
+    app.kubernetes.io/name: container-object-storage-interface-sidecar
+rules:
+- apiGroups: ["coordination.k8s.io"]
+  resources: ["leases"]
+  verbs: ["get", "watch", "list", "delete", "update", "create"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: objectstorage-sidecar
+  namespace: objectstorage-sidecar-ns
+  labels:
+    app.kubernetes.io/part-of: container-object-storage-interface
+    app.kubernetes.io/component: sidecar
+    app.kubernetes.io/version: main
+    app.kubernetes.io/name: container-object-storage-interface-sidecar
+subjects:
+  - kind: ServiceAccount
+    name: objectstorage-sidecar-sa
+    namespace: default
+roleRef:
+  kind: Role
+  name: objectstorage-sidecar
+  apiGroup: rbac.authorization.k8s.io
+

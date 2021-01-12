@@ -2,12 +2,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: objectstorage-provisioner
+  name: objectstorage-sidecar
   labels:
     app.kubernetes.io/part-of: container-object-storage-interface
-    app.kubernetes.io/component: provisioner
+    app.kubernetes.io/component: sidecar
     app.kubernetes.io/version: main
-    app.kubernetes.io/name: container-object-storage-interface-provisioner
+    app.kubernetes.io/name: container-object-storage-interface-sidecar
 spec:
   replicas: 1
   minReadySeconds: 30
@@ -21,17 +21,17 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/part-of: container-object-storage-interface
-      app.kubernetes.io/component: provisioner
-      app.kubernetes.io/name: container-object-storage-interface-provisioner
+      app.kubernetes.io/component: sidecar
+      app.kubernetes.io/name: container-object-storage-interface-sidecar
   template:
     metadata:
       labels:
         app.kubernetes.io/part-of: container-object-storage-interface
-        app.kubernetes.io/component: provisioner
-        app.kubernetes.io/name: container-object-storage-interface-provisioner
+        app.kubernetes.io/component: sidecar
+        app.kubernetes.io/name: container-object-storage-interface-sidecar
         app.kubernetes.io/version: main
     spec:
-      serviceAccountName: objectstorage-provisioner-sa
+      serviceAccountName: objectstorage-sidecar-sa
       containers:
       - name: objectstorage-sample-driver
         image: quay.io/containerobjectstorage/objectstorage-sample-driver:latest
@@ -42,10 +42,15 @@ spec:
           requests:
             cpu: 100m
             memory: 100Mi
+        args:
+        - "--listen-address=tcp://0.0.0.0:9000"
+        - "--s3-endpoint=minio.default.svc:9000"
+        - "--access-key=minio"
+        - "--secret-key=minio123"
         envFrom:
         - secretRef:
-            name: objectstorage-provisioner
-      - name: objectstorage-provisioner-sidecar
+            name: objectstorage-sidecar
+      - name: objectstorage-sidecar
         image: quay.io/containerobjectstorage/objectstorage-sidecar:latest
         resources:
           limits:
@@ -58,5 +63,5 @@ spec:
         - name: CONNECT_ADDRESS
           valueFrom:
             secretKeyRef:
-              name: objectstorage-provisioner
+              name: objectstorage-sidecar
               key: LISTEN_ADDRESS

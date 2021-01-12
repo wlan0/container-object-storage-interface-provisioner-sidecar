@@ -1,7 +1,7 @@
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: objectstorage-provisioner-ns
+namespace: objectstorage-sidecar-ns
 
 commonAnnotations:
   cosi.storage.k8s.io/authors: "Kubernetes Authors"
@@ -12,7 +12,7 @@ commonLabels:
   app.kubernetes.io/part-of: container-object-storage-interface
   app.kubernetes.io/component: provisioner
   app.kubernetes.io/version: main
-  app.kubernetes.io/name: container-object-storage-interface-provisioner
+  app.kubernetes.io/name: container-object-storage-interface-sidecar
 
 resources:
 - resources/ns.yaml
